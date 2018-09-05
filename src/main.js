@@ -7,6 +7,7 @@ import firebase from 'firebase'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Tchat from './pages/Tchat'
+import store from './store'
 
 Vue.use(VueRouter)
 
@@ -38,10 +39,13 @@ let config = {
 };
 firebase.initializeApp(config);
 
+window.firebase =firebase
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   components: { App },
   template: '<App/>',
-  router
+  router,
+  store
 })
