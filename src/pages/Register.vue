@@ -11,25 +11,25 @@
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="text" name="name" placeholder="Psuedo" v-model.trim="name">
+            <input type="text" name="name" placeholder="Psuedo" v-model.trim="name" required>
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="email" name="email" placeholder="Email" v-model.trim="email">
+            <input type="email" name="email" placeholder="Email" v-model.trim="email" required>
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="lock icon"></i>
-            <input type="password" name="password" placeholder="Password" v-model="password">
+            <input type="password" name="password" placeholder="Password" v-model.trim="password" required>
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="lock icon"></i>
-            <input type="password" name="password_confirmation" placeholder="Confirm Password" v-model="password_confirmation">
+            <input type="password" name="password_confirmation" placeholder="Confirm Password" v-model.trim="password_confirmation" required>
           </div>
         </div>
         <div class="ui fluid large orange button" @click.prevent="register" :class="{'loading': isLoading}">Register</div>
@@ -41,7 +41,7 @@
     </form>
 
     <div class="ui message">
-      New to us? <router-link to="/login">To log in</router-link>
+      Already registered? <router-link to="/login">Log in</router-link>
     </div>
   </div>
 </div>
@@ -70,12 +70,10 @@
         },
         methods: {
             register() {
-                console.log("Register")
-                this.errors = [];
+                this.errors = []
                 if(this.isFormValid()) {
                   this.isLoading = true
                   firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(user => {
-                    console.log("Registered User" + user.email) 
                     user.updateProfile({
                       displayName: this.name,
                       photoURL: "http://www.gravatar.com/avatar/"+md5(user.email)+"?d=identicon"
