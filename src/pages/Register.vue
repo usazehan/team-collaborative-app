@@ -3,7 +3,7 @@
   <div class="column">
     <h2 class="ui orange header">
       <div class="content">
-        Log-in to your account
+        Register to your account
       </div>
     </h2>
     <form class="ui large form" :class="{'error' : hasErrors}">
