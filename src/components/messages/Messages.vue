@@ -18,7 +18,10 @@
 
     export default {
         name: 'messages',
-        components: {MessageForm}
+        components: {MessageForm},
+        data() {
+            messagesRef: firebase.database().ref('messages')
+        }
     }
 </script>
 
