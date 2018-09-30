@@ -78,7 +78,9 @@
                 return user.status == 'online'
             },
             detachListeners() {
-
+                this.usersRef.off()
+                this.presenceRef.off()
+                this.connectedRef.off()
             }
         },
         beforeDestroy() {
