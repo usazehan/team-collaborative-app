@@ -13,19 +13,22 @@
                 </div>
                 <div class="field">
                     <button class="ui green button" @click.prevent="sendMessage">Send</button>
-                    <button class="ui labeled icon button"><i class="cloud upload icon"></i>File</button>
+                    <button class="ui labeled icon button" @click.prevent="openFileModal"><i class="cloud upload icon"></i>File</button>
                 </div>
             </div>
         </div>
+        <file-modal></file-modal>
     </div>
 </template>
 
 <script>
 
     import {mapGetters} from 'vuex'
+    import FileModal from './FileModal'
 
     export default {
         name: 'message-form',
+        components: {FileModal},
         data() {
             return {
                 message: '',
@@ -58,6 +61,12 @@
                         id: this.currentUser.uid
                     }
                 }
+            },
+            uploadFile(File, metadata) {
+                console.log("upload")
+            },
+            openFileModal() {
+                $("#fileModal").modal("show")
             }
         }
     }
