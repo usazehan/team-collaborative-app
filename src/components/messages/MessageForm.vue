@@ -17,7 +17,13 @@
                 </div>
             </div>
         </div>
-        <file-modal></file-modal>
+        <div class="ui small orange inverted progress" data-total="100" id="uploadedFile">
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+            <div class="label">{{ uploadLabel }}</div>
+        </div>
+        <file-modal ref="file_modal"></file-modal>
     </div>
 </template>
 
@@ -25,6 +31,7 @@
 
     import {mapGetters} from 'vuex'
     import FileModal from './FileModal'
+    import uuidV4 from 'uuid/V4'
 
     export default {
         name: 'message-form',
@@ -32,11 +39,25 @@
         data() {
             return {
                 message: '',
-                errors: []
+                errors: [],
+                uploadTask: null,
+                uploadState: null,
+                storageRef: firebase.storage().ref(),
             }
         },
         computed: {
-            ...mapGetters(['currentChannel', 'currentUser'])
+            ...mapGetters(['currentChannel', 'currentUser', 'isPrivate']),
+            uploadLabel() {
+                switch(this.uploadState) {
+                    case 'uploading': return 'Sending in progress...'
+                        break;
+                    case 'error': return 'An error s\'has occurred'
+                        break;
+                    case 'done': return 'Send made'
+                        break;
+                    default: return ''
+                }
+            }
         },
         methods: {
             sendMessage() {
@@ -51,9 +72,8 @@
                     }
                 }
             },
-            createMessage() {
-                return {
-                    content: this.message,
+            createMessage( fileUrl = null) {
+                let message = {
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
                     user: {
                         name: this.currentUser.displayName,
@@ -61,12 +81,55 @@
                         id: this.currentUser.uid
                     }
                 }
+                if(fileUrl == null) {
+                    message['content'] = this.message
+                } else {
+                    message['image'] = fileUrl
+                }
+                return message
             },
-            uploadFile(File, metadata) {
-                console.log("upload")
+            uploadFile(file, metadata) {
+                if(file === null) return false
+
+                let pathToUpload = this.currentChannel.id
+                let ref = this.$parent.getMessageRef()
+                let filePath = this.getPath() + '/' + uuidV4() + '.jpg'
+
+                this.uploadTask = this.storageRef.child(filePath).put(file, metadata)
+                this.uploadState = "uploading"
+                this.uploadTask.on('state_changed', snap => {
+                    let percent = (snap.bytesTransferred / snap.totalBytes) * 100
+                    $("#uploadedFile").progress("set percent", percent)
+                }, error => {
+                    this.errors.push(error.message)
+                    this.uploadState = 'error'
+                    this.uploadTask = null
+                }, () => {
+                    this.uploadState = 'done'
+                    this.$refs.file_modal.resetForm()
+
+                    let fileUrl = this.uploadTask.snapshot.downloadURL
+                    this.sendFileMessage(fileUrl, ref, pathToUpload)
+                })
+            },
+            sendFileMessage(fileUrl, ref, pathToUpload) {
+                ref.child(pathToUpload).push().set(this.createMessage(fileUrl)).then(() => {
+                    this.$nextTick(() => {
+                        $("html, body").scrollTop($(document).height())
+                    })
+                }).catch(error => {
+                    this.errors.push(error.message)
+                })
             },
             openFileModal() {
                 $("#fileModal").modal("show")
+            },
+            getPath() {
+                if(this.isPrivate) {
+                    return 'tchat/private/'+this.currentChannel.id
+                } else {
+                    return 'tchat/public'
+                }
             }
         }
     }

@@ -57,6 +57,11 @@
                 let index = this.authorized.indexOf(mime.lookup(filename))
                 return index !== -1
             },
+            resetForm() {
+                console.log("reset form")
+                $('.form').trigger('reset')
+                this.file = null
+            }
         },
     }
 </script>
