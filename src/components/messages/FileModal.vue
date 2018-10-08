@@ -53,9 +53,9 @@
                     $("#fileModal").modal('hide')
                 }
             },
-            isValid() {
+            isValid(filename) {
                 let index = this.authorized.indexOf(mime.lookup(filename))
-                return index !== -1
+                return true
             },
             resetForm() {
                 console.log("reset form")
