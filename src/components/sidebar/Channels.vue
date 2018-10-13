@@ -14,6 +14,7 @@
                     @click="changeChannel(channel)"
                 >
                     # {{channel.name}}
+                    <div class="ui label purple channel__count">{{getNotification(channel)}}</div>
                 </li>
             </ul>
         </div>
@@ -60,8 +61,10 @@
                 channels: [],
                 new_channel: '',
                 channelsRef: firebase.database().ref('channels'),
+                messagesRef: firebase.database().ref('messages'),
                 errors: [],
-                firstLoad: true
+                firstLoad: true,
+                notifCount: []
             }
         },
         computed: {
@@ -81,7 +84,42 @@
                         this.$store.dispatch("setCurrentChannel", this.channels[0])
                     }
                     this.firstLoad = false
+                    this.addCountListener(snap.key)
                 })
+            },
+            addCountListener(channelId) {
+                this.messagesRef.child(channelId).on('value', snap => {
+                    this.handleNotifications(channelId, this.currentChannel.id, this.notifCount, snap)
+                })
+            },
+            handleNotifications(channelId, currentChannelId, notifCount, snap) {
+                let lastTotal = 0
+                let index = notifCount.findIndex(el => el.id === channelId)
+                if(index !== -1) {
+                    if(channelId !== currentChannelId) {
+                        lastTotal = notifyCount[index].total
+                        if(snap.numChildren() - lastTotal > 0) {
+                            notifyCount[index].notif = snap.numChildren() - lastTotal
+                        }
+                    }
+                    notifCount[index].lastKnownTotal = snap.numChildren()
+                } else {
+                    notifCount.push({
+                        id: channelId, 
+                        total: snap.numChildren(),
+                        lastKnownTotal: snap.numChildren(),
+                        notify: 0
+                    })
+                }
+            },
+            getNotification(channel) {
+                let notif = 0
+                this.notifCount.forEach(el => {
+                    if(el.id === channel.id) {
+                        notif = el.notif
+                    }
+                })
+                return notif
             },
             openChannelModal() {
                 $("#channelModal").modal('show')

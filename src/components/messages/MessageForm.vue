@@ -13,11 +13,20 @@
                 </div>
                 <div class="field">
                     <button class="ui green button" @click.prevent="sendMessage">Send</button>
-                    <button class="ui labeled icon button" @click.prevent="openFileModal"><i class="cloud upload icon"></i>File</button>
+                    <button 
+                        class="ui labeled icon button" 
+                        @click.prevent="openFileModal"
+                        :class="{'disabled' : uploadState == 'uploading'}"
+                    ><i class="cloud upload icon"></i>File</button>
                 </div>
             </div>
         </div>
-        <div class="ui small orange inverted progress" data-total="100" id="uploadedFile">
+        <div 
+            class="ui small orange inverted progress" 
+            data-total="100" 
+            id="uploadedFile"
+            v-if="uploadState != null"
+        >
             <div class="bar">
                 <div class="progress"></div>
             </div>
