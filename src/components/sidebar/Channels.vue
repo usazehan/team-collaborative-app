@@ -58,6 +58,7 @@
 <script>
 
     import {mapGetters} from 'vuex'
+    import mixin from '../mixins'
 
     export default {
         name: 'channels',
@@ -73,6 +74,7 @@
                 channel: null
             }
         },
+        mixins: [mixin],
         computed: {
             ...mapGetters(['currentChannel', 'isPrivate']),
             hasErrors() {
@@ -106,26 +108,6 @@
                     this.handleNotifications(channelId, this.currentChannel.id, this.notifCount, snap)
                 })
             },
-            handleNotifications(channelId, currentChannelId, notifCount, snap) {
-                let lastTotal = 0
-                let index = notifCount.findIndex(el => el.id === channelId)
-                if(index !== -1) {
-                    if(channelId !== currentChannelId) {
-                        lastTotal = notifyCount[index].total
-                        if(snap.numChildren() - lastTotal > 0) {
-                            notifyCount[index].notif = snap.numChildren() - lastTotal
-                        }
-                    }
-                    notifCount[index].lastKnownTotal = snap.numChildren()
-                } else {
-                    notifCount.push({
-                        id: channelId, 
-                        total: snap.numChildren(),
-                        lastKnownTotal: snap.numChildren(),
-                        notify: 0
-                    })
-                }
-            },
             getNotification(channel) {
                 let notif = 0
                 this.notifCount.forEach(el => {
@@ -158,7 +140,7 @@
                 this.channel == channel
             },
             resetNotifications() {
-                let index = this.notifyCount.findIndex(el => el.id === this.channel.id)
+                let index = this.notifCount.findIndex(el => el.id === this.channel.id)
                 if(index !== -1) {
                     this.notifCount[index].total = this.notifCount[index].lastKnownTotal
                     this.notifCount[index].notif = 0
