@@ -151,21 +151,21 @@
 </script>
 
 <style scoped>
-    .message__form {
+    .messages__form{
         position: fixed;
         bottom: 0;
-        background-color: #232323;
+        background-color:#232323;
         padding: 10px;
         padding-top: 20px;
         height: 210px;
         left: 300px;
-        right: 0; 
+        right: 0;
     }
-    .message__form.big {
+    .messages__form.big{
         height: 350px;
     }
-    .shortcut {
-        color: white;
+    .shortcut{
+        color:white;
     }
 </style>
 

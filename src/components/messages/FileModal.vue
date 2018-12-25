@@ -47,15 +47,17 @@
                 }
             },
             sendFile() {
-                if(this.isValid(this.file.name)) {
-                    let metadata = {contentType: mime.lookup(this.file.name)}
-                    this.$parent.uploadFile(this.file, metadata)
-                    $("#fileModal").modal('hide')
+                if(this.file !== null){
+                    if(this.isValid(this.file.name)){
+                        let metadata = { contentType: mime.lookup(this.file.name)}
+                        this.$parent.uploadFile(this.file, metadata)
+                        $("#fileModal").modal('hide')
+                    }
                 }
             },
             isValid(filename) {
                 let index = this.authorized.indexOf(mime.lookup(filename))
-                return true
+                return index !== -1;
             },
             resetForm() {
                 console.log("reset form")

@@ -63,5 +63,5 @@ const unsubscribe = firebase.auth().onAuthStateChanged(user => {
   unsubscribe()
 })
 
-/* eslint-disable no-new */
+
 
